@@ -1,43 +1,12 @@
 # <h1 align="center"> Forge Template </h1>
 
-**Template repository for getting started quickly with Foundry projects**
-
-![Github Actions](https://github.com/foundry-rs/forge-template/workflows/CI/badge.svg)
-
-## Getting Started
-
-Click "Use this template" on [GitHub](https://github.com/foundry-rs/forge-template) to create a new repository with this repo as the initial state.
-
-Or, if your repo already exists, run:
-```sh
-forge init
-forge build
-forge test
-```
-
-<!-- PLan -->
-1. Write a basic smart contract wallet that uses ERC-4337 (inherit an existing thing?)
-2. 
-
-## Writing your first test
-
-All you need is to `import forge-std/Test.sol` and then inherit it from your test contract. Forge-std's Test contract comes with a pre-instatiated [cheatcodes environment](https://book.getfoundry.sh/cheatcodes/), the `vm`. It also has support for [ds-test](https://book.getfoundry.sh/reference/ds-test.html)-style logs and assertions. Finally, it supports Hardhat's [console.log](https://github.com/brockelmore/forge-std/blob/master/src/console.sol). The logging functionalities require `-vvvv`.
-
-```solidity
-pragma solidity 0.8.10;
-
-import "forge-std/Test.sol";
-
-contract ContractTest is Test {
-    function testExample() public {
-        vm.roll(100);
-        console.log(1);
-        emit log("hi");
-        assertTrue(true);
-    }
-}
-```
-
-## Development
-
-This project uses [Foundry](https://getfoundry.sh). See the [book](https://book.getfoundry.sh/getting-started/installation.html) for instructions on how to install and use Foundry.
+<!-- // How this works:
+// 1. Smart wallet is deployed for each user
+// 2. User off-chain has a mechanism of authorising a transaction. This is likely a private key they hold. The user creates a 
+//    UserOperation object using an SDK, signs the request and then via an RPC sends it to the alternative mempool
+// 3. A bundler takes the user UserOperation, along with other UserOperations and turns them into a single Ethereum transaction. During this process
+//    it calls the validateUserOp() method on each wallet to verify that it will be successful
+// 4. The bundler then submits the transaction to the Ethereum network. The transaction will call the Entrypoint point, specifically the handleOps() method
+//    handleOps(UserOperation[] calldata userOps) itself will iterate through all UserOperations and for each call wallet.validateUserOp(). It also
+//    calls the target address and with the calldata (i.e. executing the UserOperation). The EntryPoint may also call execFromEntryPoint() on the wallet
+// 5.  -->
