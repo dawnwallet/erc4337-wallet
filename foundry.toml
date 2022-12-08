@@ -4,3 +4,9 @@ src = "src"
 out = "out"
 libs = ["lib"]
 solc = "0.8.13" # to use a specific local solc install set the path as `solc = "<path to solc>/solc"`
+
+[rpc_endpoints]
+goerli = "${GOERLI_RPC_URL}"
+
+[etherscan]
+goerli = { key = "${ETHERSCAN_API_KEY}" }

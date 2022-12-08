@@ -10,7 +10,7 @@
   "scripts": {
     "build": "forge build",
     "test": "forge test",
-    "deploy": "forge deploy"
+    "deploy": "source .env && forge script script/Deployer.s.sol:Deployer --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv"
   },
   "repository": {
     "type": "git",
