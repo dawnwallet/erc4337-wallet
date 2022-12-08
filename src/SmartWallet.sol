@@ -97,6 +97,11 @@ contract SmartWallet is Ownable, IWallet {
         emit WithdrawERC20(to, token, amount);
     }
 
+    /// @notice Withdraw ETH from the wallet. Permissioned to only the owner
+    function withdrawETH() external onlyOwner {
+        payable(owner()).transfer(address(this).balance);
+    }
+
     /////////////////  INTERNAL METHODS ///////////////
 
     /// @notice Validate the signature of the userOperation

@@ -1,0 +1,25 @@
+{
+  "name": "smartwallet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "deploy": "forge deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomas-waite/erc4337-wallet.git"
+  },
+  "author": "Tom Waite",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/thomas-waite/erc4337-wallet/issues"
+  },
+  "homepage": "https://github.com/thomas-waite/erc4337-wallet#readme"
+}

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
@@ -29,6 +29,7 @@ contract SmartWalletContract is Test {
 
     function test_updateEntryPoint() public {
         address newEntryPoint = address(0x2);
+        vm.prank(ownerAddress);
         wallet.setEntryPoint(newEntryPoint);
         assertEq(wallet.entryPoint(), newEntryPoint);
     }
