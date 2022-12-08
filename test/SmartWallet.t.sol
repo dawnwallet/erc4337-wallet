@@ -7,12 +7,13 @@ import {SmartWallet} from "src/SmartWallet.sol";
 
 contract SmartWalletContract is Test {
     SmartWallet wallet;
+    address entryPoint = address(0x1);
 
     function setUp() public {
-        wallet = new SmartWallet();
+        wallet = new SmartWallet(entryPoint);
     }
 
     function test_SetupState() public {
-        assertEq(wallet.ENTRY_POINT(), 0x64c4Bffb220818F0f2ee6DAe7A2F17D92b359c5d);
+        assertEq(wallet.entryPoint(), entryPoint);
     }
 }
