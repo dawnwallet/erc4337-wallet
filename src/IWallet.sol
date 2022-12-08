@@ -4,7 +4,6 @@ pragma solidity ^0.8.13;
 import {UserOperation} from "./UserOperation.sol";
 
 interface IWallet {
-
     /**
      * Validate user's signature and nonce
      * the entryPoint will make the call to the recipient only if this validation call returns successfully.
@@ -27,5 +26,5 @@ interface IWallet {
         bytes32 userOpHash,
         address aggregator,
         uint256 missingAccountFunds
-    ) external returns (uint256 deadline);
+    ) external returns (bool);
 }
