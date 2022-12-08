@@ -9,6 +9,8 @@ import {SafeERC20} from "openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol"
 import {IERC20} from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 import {Address} from "openzeppelin-contracts/utils/Address.sol";
 
+import "forge-std/console.sol";
+
 /// @notice Smart contract wallet compatible with ERC-4337
 // Wallet features:
 // 1. Updateable entrypoint
@@ -36,8 +38,9 @@ contract SmartWallet is Ownable, IWallet {
     /// @notice Able to receive ETH
     receive() external payable {}
 
-    constructor(address _entryPoint) Ownable() {
+    constructor(address _entryPoint, address _owner) Ownable() {
         entryPoint = _entryPoint;
+        transferOwnership(_owner);
     }
 
     /// @notice Set the entrypoint contract, restricted to onlyOwner
