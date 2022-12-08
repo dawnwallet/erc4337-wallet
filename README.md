@@ -10,3 +10,6 @@
 //    handleOps(UserOperation[] calldata userOps) itself will iterate through all UserOperations and for each call wallet.validateUserOp(). It also
 //    calls the target address and with the calldata (i.e. executing the UserOperation). The EntryPoint may also call execFromEntryPoint() on the wallet
 // 5.  -->
+
+## Deployed contracts
+Smart wallet Goerli: https://goerli.etherscan.io/address/0xf4c812424382b2d7720c08bb45f24f86302f2ae6#code 
