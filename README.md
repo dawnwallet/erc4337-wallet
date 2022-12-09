@@ -30,3 +30,6 @@ Smart wallet Goerli: https://goerli.etherscan.io/address/0xf4c812424382b2d7720c0
 2. End to end test with an entrypoint, entire flow working
 3. Deploy a paymaster, get that flow working
 4. Get a bundler running and able to submit transactions
+
+## Acknowledgements
+Based on the the work done on the Eth-Infinitism repo: https://github.com/eth-infinitism/account-abstraction 
