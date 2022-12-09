@@ -24,12 +24,13 @@ contract SmartWallet is Ownable, IWallet {
     event WithdrawERC20(address indexed _to, address _token, uint256 _amount);
     event PayPrefund(address indexed _payee, uint256 _amount);
 
-    /// @notice Constant ENTRY_POINT contract in ERC-4337 system
+    /// @notice EntryPoint contract in the ERC-4337 architecture
     address public entryPoint;
 
     /// @notice Nonce used for replay protection
     uint256 public nonce;
 
+    /// @notice Validate that only the entryPoint is able to call a method
     modifier onlyEntryPoint() {
         require(msg.sender == entryPoint, "SmartWallet: Only entryPoint can call this method");
         _;
@@ -76,7 +77,7 @@ contract SmartWallet is Ownable, IWallet {
 
         // Interactions
         _prefundEntryPoint(missingWalletFunds);
-        return true;
+        return 0;
     }
 
     /// @notice Method called by entryPoint to execute the calldata supplied by a wallet

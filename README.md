@@ -24,3 +24,9 @@ To deploy:
 
 ## Deployed contracts
 Smart wallet Goerli: https://goerli.etherscan.io/address/0xf4c812424382b2d7720c08bb45f24f86302f2ae6#code 
+
+
+## Next steps:
+1. Get a test where validateUserOps() works
+2. Deploy a paymaster, get that flow working
+3. End to end test perhaps with an entrypoint also

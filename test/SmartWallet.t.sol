@@ -62,8 +62,8 @@ contract SmartWalletContract is Test {
 
         address aggregator = address(0x1);
         uint256 missingWalletFunds = 5e6;
-        bool result = wallet.validateUserOp(userOp, keccak256(payload), aggregator, missingWalletFunds);
-        assertTrue(result);
+        uint256 deadline = wallet.validateUserOp(userOp, keccak256(payload), aggregator, missingWalletFunds);
+        assertEq(deadline, 0);
     }
 
     /// @notice Validate that EntryPoint can call into wallet and execute transactions
