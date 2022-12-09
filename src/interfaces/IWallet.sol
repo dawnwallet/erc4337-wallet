@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import {UserOperation} from "./UserOperation.sol";
+import {UserOperation} from "../UserOperation.sol";
 
 interface IWallet {
     /**
@@ -26,5 +26,5 @@ interface IWallet {
         bytes32 userOpHash,
         address aggregator,
         uint256 missingAccountFunds
-    ) external returns (bool);
+    ) external returns (uint256);
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import {IWallet} from "./IWallet.sol";
+import {IWallet} from "./interfaces/IWallet.sol";
 import {UserOperation} from "./UserOperation.sol";
 import {Ownable} from "openzeppelin-contracts/access/Ownable.sol";
 import {ECDSA} from "openzeppelin-contracts/utils/cryptography/ECDSA.sol";
@@ -62,7 +62,7 @@ contract SmartWallet is Ownable, IWallet {
         bytes32 userOpHash, // TODO: Shouldn't this hash be constructed internally over the userOp? Why is it passed?
         address aggregator,
         uint256 missingWalletFunds
-    ) external override onlyEntryPoint returns (bool) {
+    ) external override onlyEntryPoint returns (uint256 deadline) {
         // Validate nonce is correct - protect against replay attacks
         uint256 currentNonce = nonce;
         require(currentNonce == userOp.nonce, "SmartWallet: Invalid nonce");
