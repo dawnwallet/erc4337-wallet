@@ -28,21 +28,21 @@ contract SmartWalletContractUnitTest is Test {
         assertEq(wallet.owner(), ownerAddress);
     }
 
-    function test_updateEntryPoint() public {
+    function test_UpdateEntryPoint() public {
         address newEntryPoint = address(0x2);
         vm.prank(ownerAddress);
         wallet.setEntryPoint(newEntryPoint);
         assertEq(wallet.entryPoint(), newEntryPoint);
     }
 
-    function test_updateEntryPoint_auth() public {
+    function test_UpdateEntryPoint_auth() public {
         vm.prank(address(1));
         vm.expectRevert("Ownable: caller is not the owner");
         wallet.setEntryPoint(address(2));
     }
 
     /// @notice Validate that validateUserOp() can be called and wallet state updated
-    function test_validateUserOp() public {
+    function test_ValidateUserOp() public {
         assertEq(wallet.nonce(), 0);
         (UserOperation memory userOp, bytes32 digest) = getUserOperation(
             address(wallet), wallet.nonce(), abi.encodeWithSignature("setValue(uint256)", 1), ownerPrivateKey, vm
@@ -60,10 +60,10 @@ contract SmartWalletContractUnitTest is Test {
     }
 
     /// @notice Validate that the entryPoint is prefunded with ETH on validateUserOp()
-    function test_validateUserOpFundEntryPoint() public {}
+    function test_ValidateUserOpFundEntryPoint() public {}
 
     /// @notice Validate that EntryPoint can call into wallet and execute transactions
-    function test_executeFromEntryPoint() public {
+    function test_ExecuteFromEntryPoint() public {
         assertEq(mockSetter.value(), 0);
         bytes memory payload = abi.encodeWithSelector(mockSetter.setValue.selector, 1);
 

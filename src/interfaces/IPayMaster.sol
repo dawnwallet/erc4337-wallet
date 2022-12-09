@@ -3,6 +3,8 @@ pragma solidity ^0.8.13;
 
 import {UserOperation} from "../UserOperation.sol";
 
+// Note: From https://github.com/eth-infinitism/account-abstraction
+
 /**
  * the interface exposed by a paymaster contract, who agrees to pay the gas for user's operations.
  * a paymaster must hold a stake to cover the required entrypoint stake and also the gas for the transaction.

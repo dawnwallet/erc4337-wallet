@@ -3,8 +3,11 @@ pragma solidity ^0.8.13;
 
 import {UserOperation} from "../UserOperation.sol";
 import {IAggregator} from "./IAggregator.sol";
+import {IStakeManager} from "./IStakeManager.sol";
 
-interface IEntryPoint {
+// Note: From https://github.com/eth-infinitism/account-abstraction 
+
+interface IEntryPoint is IStakeManager {
     /**
      *
      * An event emitted after each successful request
