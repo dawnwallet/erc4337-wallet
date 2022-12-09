@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {IWallet} from "./interfaces/IWallet.sol";
+import {IEntryPoint} from "./interfaces/IEntryPoint.sol";
 import {UserOperation} from "./UserOperation.sol";
 import {Ownable} from "openzeppelin-contracts/access/Ownable.sol";
 import {ECDSA} from "openzeppelin-contracts/utils/cryptography/ECDSA.sol";
@@ -19,20 +20,19 @@ import "forge-std/console.sol";
 // In this early version, there is an owner/admin who is able to sweep the wallet in case of emergency
 // Owner is default set to the deployer address
 contract SmartWallet is Ownable, IWallet {
-    /// @notice Events associated with operation of wallet
     event UpdateEntryPoint(address indexed _newEntryPoint, address indexed _oldEntryPoint);
     event WithdrawERC20(address indexed _to, address _token, uint256 _amount);
     event PayPrefund(address indexed _payee, uint256 _amount);
 
     /// @notice EntryPoint contract in the ERC-4337 architecture
-    address public entryPoint;
+    IEntryPoint public entryPoint;
 
     /// @notice Nonce used for replay protection
     uint256 public nonce;
 
     /// @notice Validate that only the entryPoint is able to call a method
     modifier onlyEntryPoint() {
-        require(msg.sender == entryPoint, "SmartWallet: Only entryPoint can call this method");
+        require(msg.sender == address(entryPoint), "SmartWallet: Only entryPoint can call this method");
         _;
     }
 
@@ -40,14 +40,14 @@ contract SmartWallet is Ownable, IWallet {
     receive() external payable {}
 
     constructor(address _entryPoint, address _owner) Ownable() {
-        entryPoint = _entryPoint;
+        entryPoint = IEntryPoint(_entryPoint);
         transferOwnership(_owner);
     }
 
     /// @notice Set the entrypoint contract, restricted to onlyOwner
     function setEntryPoint(address _newEntryPoint) external onlyOwner {
-        emit UpdateEntryPoint(_newEntryPoint, entryPoint);
-        entryPoint = _newEntryPoint;
+        emit UpdateEntryPoint(_newEntryPoint, address(entryPoint));
+        entryPoint = IEntryPoint(_newEntryPoint);
     }
 
     /// @notice Validate that the userOperation is valid. Requirements:
@@ -69,7 +69,7 @@ contract SmartWallet is Ownable, IWallet {
 
         // TODO: Verify this is correct
         // UserOp may have initCode to deploy a wallet, in which case do not validate the nonce. Used in accountCreation
-        if (userOp.initCode.length != 0) {
+        if (userOp.initCode.length == 0) {
             // Validate nonce is correct - protect against replay attacks
             uint256 currentNonce = nonce;
             require(currentNonce == userOp.nonce, "SmartWallet: Invalid nonce");
@@ -124,7 +124,7 @@ contract SmartWallet is Ownable, IWallet {
             return;
         }
 
-        (bool success,) = payable(entryPoint).call{value: amount}("");
+        (bool success,) = payable(address(entryPoint)).call{value: amount}("");
         require(success, "SmartWallet: ETH entrypoint payment failed");
         emit PayPrefund(address(this), amount);
     }

@@ -10,7 +10,7 @@
   "scripts": {
     "build": "forge build",
     "test": "forge test --match-contract UnitTest",
-    "test:fork": "forge test --match-contract IntegrationTest --rpc-url $GOERLI_RPC_URL",
+    "test:fork": "source .env && forge test --match-contract IntegrationTest --rpc-url $GOERLI_RPC_URL",
     "deploy": "source .env && forge script script/Deployer.s.sol:Deployer --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv"
   },
   "repository": {

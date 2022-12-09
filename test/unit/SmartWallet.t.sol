@@ -24,7 +24,7 @@ contract SmartWalletContractUnitTest is Test {
     }
 
     function test_SetupState() public {
-        assertEq(wallet.entryPoint(), entryPoint);
+        assertEq(address(wallet.entryPoint()), entryPoint);
         assertEq(wallet.owner(), ownerAddress);
     }
 
@@ -32,7 +32,7 @@ contract SmartWalletContractUnitTest is Test {
         address newEntryPoint = address(0x2);
         vm.prank(ownerAddress);
         wallet.setEntryPoint(newEntryPoint);
-        assertEq(wallet.entryPoint(), newEntryPoint);
+        assertEq(address(wallet.entryPoint()), newEntryPoint);
     }
 
     function test_UpdateEntryPoint_auth() public {
