@@ -64,16 +64,20 @@ contract SmartWallet is Ownable, IWallet {
         address aggregator,
         uint256 missingWalletFunds
     ) external override onlyEntryPoint returns (uint256 deadline) {
-        // Validate nonce is correct - protect against replay attacks
-        uint256 currentNonce = nonce;
-        require(currentNonce == userOp.nonce, "SmartWallet: Invalid nonce");
-
         // Validate signature
         _validateSignature(userOp, userOpHash);
 
-        // Effects
-        // Increment nonce
-        _updateNonce();
+        // TODO: Verify this is correct
+        // UserOp may have initCode to deploy a wallet, in which case do not validate the nonce. Used in accountCreation
+        if (userOp.initCode.length != 0) {
+            // Validate nonce is correct - protect against replay attacks
+            uint256 currentNonce = nonce;
+            require(currentNonce == userOp.nonce, "SmartWallet: Invalid nonce");
+
+            // Effects
+            // Increment nonce
+            _updateNonce();
+        }
 
         // Interactions
         _prefundEntryPoint(missingWalletFunds);
@@ -86,7 +90,7 @@ contract SmartWallet is Ownable, IWallet {
     /// @param value - Amount of ETH to forward to target
     /// @param payload - Calldata to send to target for execution
     function executeFromEntryPoint(address target, uint256 value, bytes calldata payload) external onlyEntryPoint {
-        string memory errorMessage = "Governor: call reverted without message";
+        string memory errorMessage = "SmartWallet: call reverted without message";
         (bool success, bytes memory returndata) = target.call{value: value}(payload);
         Address.verifyCallResult(success, returndata, errorMessage);
     }
