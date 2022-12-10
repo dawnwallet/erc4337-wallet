@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import {UserOperation} from "../UserOperation.sol";
-import {IAggregator} from "./IAggregator.sol";
 import {IStakeManager} from "./IStakeManager.sol";
 
 // Note: From https://github.com/eth-infinitism/account-abstraction 
@@ -57,14 +56,6 @@ interface IEntryPoint is IStakeManager {
      */
     error SignatureValidationFailed(address aggregator);
 
-    //UserOps handled, per aggregator
-    struct UserOpsPerAggregator {
-        UserOperation[] userOps;
-        // aggregator address
-        IAggregator aggregator;
-        // aggregated signature
-        bytes signature;
-    }
 
     /**
      * Execute a batch of UserOperation.
@@ -75,14 +66,6 @@ interface IEntryPoint is IStakeManager {
      * @param beneficiary the address to receive the fees
      */
     function handleOps(UserOperation[] calldata ops, address payable beneficiary) external;
-
-    /**
-     * Execute a batch of UserOperation with Aggregators
-     * @param opsPerAggregator the operations to execute, grouped by aggregator (or address(0) for no-aggregator accounts)
-     * @param beneficiary the address to receive the fees
-     */
-    function handleAggregatedOps(UserOpsPerAggregator[] calldata opsPerAggregator, address payable beneficiary)
-        external;
 
     /**
      * generate a request Id - unique identifier for this request.

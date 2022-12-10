@@ -56,12 +56,10 @@ contract SmartWallet is Ownable, IWallet {
     // 3. Nonce is correct
     /// @param userOp - ERC-4337 User Operation
     /// @param userOpHash - Hash of the user operation, entryPoint address and chainId
-    /// @param aggregator -
     /// @param missingWalletFunds - Amount of ETH to pay the EntryPoint for processing the transaction
     function validateUserOp(
         UserOperation calldata userOp,
         bytes32 userOpHash, // TODO: Shouldn't this hash be constructed internally over the userOp? Why is it passed?
-        address aggregator,
         uint256 missingWalletFunds
     ) external override onlyEntryPoint returns (uint256 deadline) {
         // Validate signature

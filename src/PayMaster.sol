@@ -47,10 +47,12 @@ contract PayMaster is IPaymaster, Ownable {
     ///         all transactions by everyone to be paid for through this paymaster.
     function validatePaymasterUserOp(UserOperation calldata userOp, bytes32 userOpHash, uint256 maxCost)
         external
-        returns (bytes memory context, uint256 deadline)
+        override
+        view
+        returns (bytes memory context)
     {
         // Pay for all transactions from everyone, with no check
-        return ("", 0);
+        return "";
     }
 
     /// @notice Handler for charging the sender (smart wallet) for the transaction after it has been paid for by the paymaster

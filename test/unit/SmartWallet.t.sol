@@ -48,11 +48,10 @@ contract SmartWalletContractUnitTest is Test {
             address(wallet), wallet.nonce(), abi.encodeWithSignature("setValue(uint256)", 1), ownerPrivateKey, vm
         );
 
-        address aggregator = address(0x1);
         uint256 missingWalletFunds = 0;
 
         vm.prank(entryPoint);
-        uint256 deadline = wallet.validateUserOp(userOp, digest, aggregator, missingWalletFunds);
+        uint256 deadline = wallet.validateUserOp(userOp, digest, missingWalletFunds);
         assertEq(deadline, 0);
 
         // Validate nonce incremented
