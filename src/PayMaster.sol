@@ -90,10 +90,4 @@ contract PayMaster is IPaymaster, Ownable {
         uint112 totalDeposit = getDeposit();
         entryPoint.withdrawTo(to, totalDeposit);
     }
-
-    function validatePaymasterUserOp(UserOperation calldata userOp, bytes32 userOpHash, uint256 maxCost)
-        external
-        returns (bytes memory context, uint256 deadline)
-    {}
-    function postOp(PostOpMode mode, bytes calldata context, uint256 actualGasCost) external {}
 }

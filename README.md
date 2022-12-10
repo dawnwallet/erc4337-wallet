@@ -22,14 +22,14 @@ To deploy:
 1. Copy `.env.example` to a local gitignored `.env` file. Fill in the environment variables
 2. Run `npm run deploy` to deploy to Goerlie. Note, this will verify the contracts as well on Etherscan.
 
-## Deployed contracts
-Smart wallet Goerli: https://goerli.etherscan.io/address/0xf4c812424382b2d7720c08bb45f24f86302f2ae6#code 
+## Deployed contracts (Goerli)
+v1
+- Smart wallet: https://goerli.etherscan.io/address/0x6f3458201317928919BEf5985d5069ACb155a111#code 
+- Paymaster (pays for everything, no check): https://goerli.etherscan.io/address/0x98CeE2e3ffC2d80E6d6D073079926132F1b71B2b#code 
 
+v2
+- Smart wallet: https://goerli.etherscan.io/address/0x77fd2AC5385d76B90B48B0A141cc8d418ABE5D18 
 
-## Next steps:
-2. End to end test with an entrypoint, entire flow working
-3. Deploy a paymaster, get that flow working
-4. Get a bundler running and able to submit transactions
 
 ## Acknowledgements
 Based on the the work done on the Eth-Infinitism repo: https://github.com/eth-infinitism/account-abstraction 

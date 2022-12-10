@@ -11,7 +11,8 @@
     "build": "forge build",
     "test": "forge test --match-contract UnitTest",
     "test:fork": "source .env && forge test --match-contract IntegrationTest --rpc-url $GOERLI_RPC_URL",
-    "deploy": "source .env && forge script script/Deployer.s.sol:Deployer --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv"
+    "deploy:all": "source .env && forge script script/DeployAll.s.sol:DeployAll --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv",
+    "deploy:wallet": "source .env && forge script script/DeployWallet.s.sol:DeployWallet --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv"
   },
   "repository": {
     "type": "git",

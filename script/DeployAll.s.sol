@@ -7,16 +7,20 @@ import "forge-std/Script.sol";
 
 // Deploy the smart wallet. Make use of a previously deployed ENTRY_POINT
 // Note: The Paymaster is setup to pay for all transactions for all users, using ETH
-contract Deployer is Script {
+contract DeployAll is Script {
     SmartWallet public wallet;
     PayMaster public paymaster;
 
     address public constant ENTRY_POINT = 0x602aB3881Ff3Fa8dA60a8F44Cf633e91bA1FdB69;
-    address public constant OWNER = 0x64c4Bffb220818F0f2ee6DAe7A2F17D92b359c5d;
+    address public constant OWNER = 0xB4c251bf29dEee4E74f128f8B8aAb5b61143F492;
 
-    uint32 public constant UNSTAKE_DELAY = 1 days;
-    uint112 PAYMASTER_DEPOSIT = 0.1 ether;
-    uint112 PAYMASTER_STAKE = 0.2 ether;
+    uint32 public constant UNSTAKE_DELAY = 100 seconds;
+    uint112 PAYMASTER_DEPOSIT = 0.2 ether;
+    uint112 PAYMASTER_STAKE = 1 ether;
+
+    // Minimum stake amount and time
+    // uint112 constant public PAYMASTER_STAKE_VALUE = 1 ether;
+    // uint112 constant public PAYMASTER_MIN_UNSTAKE_DELAY = 100 seconds;
 
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
