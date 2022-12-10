@@ -18,7 +18,7 @@ contract DeployWallet is Script {
         wallet = new SmartWallet(ENTRY_POINT, OWNER);
 
         // Transfer some ETH to the wallet
-        address(wallet).transfer(0.1 ether);
+        payable(address(wallet)).transfer(0.1 ether);
         vm.stopBroadcast();
     }
 }
