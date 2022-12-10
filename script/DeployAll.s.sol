@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import {SmartWallet} from "src/SmartWallet.sol";
 import {PayMaster} from "src/PayMaster.sol";
+import {EntryPoint} from "src/external/EntryPoint.sol";
 import "forge-std/Script.sol";
 
 // Deploy the smart wallet. Make use of a previously deployed ENTRY_POINT
@@ -10,30 +11,34 @@ import "forge-std/Script.sol";
 contract DeployAll is Script {
     SmartWallet public wallet;
     PayMaster public paymaster;
+    EntryPoint public entryPoint;
 
-    address public constant ENTRY_POINT = 0x602aB3881Ff3Fa8dA60a8F44Cf633e91bA1FdB69;
     address public constant OWNER = 0xB4c251bf29dEee4E74f128f8B8aAb5b61143F492;
 
     uint32 public constant UNSTAKE_DELAY = 100 seconds;
-    uint112 PAYMASTER_DEPOSIT = 0.2 ether;
-    uint112 PAYMASTER_STAKE = 1 ether;
+    uint112 PAYMASTER_DEPOSIT = 0.1 ether;
+    uint112 PAYMASTER_STAKE = 0.1 ether;
 
-    // Minimum stake amount and time
-    // uint112 constant public PAYMASTER_STAKE_VALUE = 1 ether;
-    // uint112 constant public PAYMASTER_MIN_UNSTAKE_DELAY = 100 seconds;
+    address constant CREATE2_FACTORY = 0xce0042B868300000d44A59004Da54A005ffdcf9f;
+    uint256 MIN_PAYMASTER_STAKE_AMOUNT = 1e6;
+    uint32 MIN_PAYMASTER_STAKE_DURATION = 1 seconds;
 
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
         vm.startBroadcast(deployerPrivateKey);
-        wallet = new SmartWallet(ENTRY_POINT, OWNER);
-        paymaster = new PayMaster(ENTRY_POINT);
+        entryPoint = new EntryPoint(CREATE2_FACTORY, MIN_PAYMASTER_STAKE_AMOUNT, MIN_PAYMASTER_STAKE_DURATION);
+        wallet = new SmartWallet(address(entryPoint), OWNER);
+        paymaster = new PayMaster(address(entryPoint));
 
-        // Stake ETH through paymaster on EntryPoint
+        // 1. Stake ETH through paymaster on EntryPoint
         paymaster.addStake{value: PAYMASTER_STAKE}(UNSTAKE_DELAY);
 
-        // Deposit ETH to pay for user transactions
+        // 2. Deposit ETH to pay for user transactions
         paymaster.deposit{value: PAYMASTER_DEPOSIT}();
+
+        // 3. Transfer some ETH to wallet
+        payable(address(wallet)).transfer(0.1 ether);
 
         vm.stopBroadcast();
     }
