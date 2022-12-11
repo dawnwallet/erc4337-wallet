@@ -12,6 +12,7 @@ contract SmartWalletContractUnitTest is Test {
     SmartWallet wallet;
     MockSetter mockSetter;
     address entryPoint = address(0x1);
+    uint256 chainId = block.chainid;
     uint256 ownerPrivateKey = uint256(0x56b861d4f5581b621ed04ac55e4f6f6a739e26c2c71dd1019e9994e3c068cdcf);
     address ownerAddress = 0xB8Ce83E0f1Db078d7e9cf3576a05C63195472A56;
 
@@ -44,15 +45,21 @@ contract SmartWalletContractUnitTest is Test {
     /// @notice Validate that validateUserOp() can be called and wallet state updated
     function test_ValidateUserOp() public {
         assertEq(wallet.nonce(), 0);
-        (UserOperation memory userOp, bytes32 digest) = getUserOperation(
-            address(wallet), wallet.nonce(), abi.encodeWithSignature("setValue(uint256)", 1), ownerPrivateKey, vm
+        (UserOperation memory userOp, bytes32 userOpHash) = getUserOperation(
+            address(wallet),
+            wallet.nonce(),
+            abi.encodeWithSignature("setValue(uint256)", 1),
+            entryPoint,
+            uint8(chainId),
+            ownerPrivateKey,
+            vm
         );
 
         uint256 missingWalletFunds = 0;
 
         address aggregator = address(2);
         vm.prank(entryPoint);
-        uint256 deadline = wallet.validateUserOp(userOp, digest, aggregator, missingWalletFunds);
+        uint256 deadline = wallet.validateUserOp(userOp, userOpHash, aggregator, missingWalletFunds);
         assertEq(deadline, 0);
 
         // Validate nonce incremented

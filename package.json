@@ -9,8 +9,9 @@
   },
   "scripts": {
     "build": "forge build",
-    "test": "forge test --match-contract UnitTest",
-    "test:fork": "source .env && forge test --match-contract IntegrationTest --rpc-url $GOERLI_RPC_URL",
+    "test": "npm run test:unit && npm run test:fork",
+    "test:unit": "forge test --match-contract UnitTest",
+    "test:fork": "source .env && forge test --match-contract EndToEndTest --rpc-url $GOERLI_RPC_URL",
     "deploy:all": "source .env && forge script script/DeployAll.s.sol:DeployAll --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv",
     "deploy:wallet": "source .env && forge script script/DeployWallet.s.sol:DeployWallet --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv"
   },
