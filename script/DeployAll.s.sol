@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import {SmartWallet} from "src/SmartWallet.sol";
 import {PayMaster} from "src/PayMaster.sol";
 import {EntryPoint} from "src/external/EntryPoint.sol";
+import {MockERC20} from "test/unit/mock/MockERC20.sol";
 import "forge-std/Script.sol";
 
 // Deploy the smart wallet. Make use of a previously deployed ENTRY_POINT
@@ -12,6 +13,7 @@ contract DeployAll is Script {
     SmartWallet public wallet;
     PayMaster public paymaster;
     EntryPoint public entryPoint;
+    MockERC20 public token;
 
     address public constant OWNER = 0xB4c251bf29dEee4E74f128f8B8aAb5b61143F492;
 
@@ -30,6 +32,7 @@ contract DeployAll is Script {
         entryPoint = new EntryPoint();
         wallet = new SmartWallet(address(entryPoint), OWNER);
         paymaster = new PayMaster(address(entryPoint));
+        token = new MockERC20();
 
         // 1. Stake ETH through paymaster on EntryPoint
         paymaster.addStake{value: PAYMASTER_STAKE}(UNSTAKE_DELAY);
@@ -39,6 +42,9 @@ contract DeployAll is Script {
 
         // 3. Transfer some ETH to wallet
         payable(address(wallet)).transfer(0.1 ether);
+
+        // 4. Mint some ERC20 tokens to the wallet, for transferring during testing
+        token.mint(address(wallet), 100e18);
 
         vm.stopBroadcast();
     }
