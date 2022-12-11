@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 
 import {IEntryPoint} from "src/external/IEntryPoint.sol";
 import {IWallet} from "src/interfaces/IWallet.sol";
-import {IPaymaster} from "src/external/IPaymaster.sol";
+import {IPayMaster} from "src/interfaces/IPayMaster.sol";
 import {UserOperation} from "src/external/UserOperation.sol";
 import {GoerliConfig} from "config/GoerliConfig.sol";
 import {createSignature} from "test/utils/createSignature.sol";
@@ -13,10 +13,10 @@ import {getUserOpHash} from "test/utils/getUserOpHash.sol";
 import {MockERC20} from "test/unit/mock/MockERC20.sol";
 
 /// @notice End-to-end test deployed account abstraction contracts
-contract EndToEndTest is Test {
+contract EndToEndTestNoPaymaster is Test {
     IEntryPoint public constant entryPoint = IEntryPoint(GoerliConfig.ENTRY_POINT);
     IWallet public constant wallet = IWallet(GoerliConfig.WALLET);
-    IPaymaster public constant paymaster = IPaymaster(GoerliConfig.PAYMASTER);
+    IPayMaster public constant paymaster = IPayMaster(GoerliConfig.PAYMASTER);
     address payable public beneficiary = payable(GoerliConfig.BENEFICIARY);
     uint256 ownerPrivateKey = vm.envUint("PRIVATE_KEY");
 
@@ -30,8 +30,6 @@ contract EndToEndTest is Test {
     uint256 tokenTransferAmount;
 
     UserOperation public userOp;
-
-    // Ideally, mint some ERC20s. Then encode transfers of those
 
     function setUp() public {
         // 1. Deploy a MockERC20 and fund smart wallet with tokens
@@ -88,13 +86,14 @@ contract EndToEndTest is Test {
         // The calldata sent to the wallet is actually reverting
         uint256 initialRecipientBalance = token.balanceOf(recipient);
         uint256 initialWalletBalance = token.balanceOf(address(wallet));
+        uint256 initialWalletEthBalance = address(wallet).balance;
 
         UserOperation[] memory userOps = new UserOperation[](1);
         userOps[0] = userOp;
 
         entryPoint.handleOps(userOps, beneficiary);
 
-        // Verify ETH transfer
+        // 1. Verify token transfer
         uint256 finalRecipientBalance = token.balanceOf(recipient);
         uint256 recipientGain = finalRecipientBalance - initialRecipientBalance;
 
@@ -107,17 +106,9 @@ contract EndToEndTest is Test {
         // Verify smart wallet ETH balance decremented by at least the ETH transfer to recipient
         // Wallet has transferred ETH to the recipient and also paid gas
         assertEq(walletLoss, tokenTransferAmount);
-    }
 
-    /// @notice Validate that the EntryPoint can execute a userOperation, with the paymaster paying for gas
-    function test_HandleOps_Paymaster() public {
-        UserOperation[] memory userOps = new UserOperation[](1);
-        userOps[0] = userOp;
-
-        // Set the paymaster
-        userOp.paymasterAndData = abi.encode(paymaster, bytes(""));
-        console.log("paymaster");
-        console.logBytes(userOp.paymasterAndData);
-        entryPoint.handleOps(userOps, beneficiary);
+        // 2. Verify smart wallet paid for gas
+        uint256 walletEthLoss = initialWalletEthBalance - address(wallet).balance;
+        assertGt(walletEthLoss, 0);
     }
 }
