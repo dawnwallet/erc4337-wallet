@@ -25,6 +25,7 @@ function getUserOperation(address sender, uint256 nonce, bytes memory callData, 
         0x1, // entryPoint
         0x1 // chainId
     );
+    // TODO: Not generating a signature like the wallet reproduces
     bytes32 digest = ECDSA.toEthSignedMessageHash(message);
 
     (uint8 v, bytes32 r, bytes32 s) = vm.sign(ownerPrivateKey, digest);
