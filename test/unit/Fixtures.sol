@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {Vm} from "forge-std/Test.sol";
 import {ECDSA} from "openzeppelin-contracts/utils/cryptography/ECDSA.sol";
-import {UserOperation} from "src/UserOperation.sol";
+import {UserOperation} from "src/external/UserOperation.sol";
 
 // Assumes chainId is 0x1, entryPoint is address(0x1). Hardcoded due to Solidity stack too deep errors, tricky to work around
 function getUserOperation(address sender, uint256 nonce, bytes memory callData, uint256 ownerPrivateKey, Vm vm)

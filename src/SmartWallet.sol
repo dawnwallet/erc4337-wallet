@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import {IWallet} from "./interfaces/IWallet.sol";
-import {IEntryPoint} from "./interfaces/IEntryPoint.sol";
-import {UserOperation} from "./UserOperation.sol";
 import {Ownable} from "openzeppelin-contracts/access/Ownable.sol";
 import {ECDSA} from "openzeppelin-contracts/utils/cryptography/ECDSA.sol";
 import {SafeERC20} from "openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 import {Address} from "openzeppelin-contracts/utils/Address.sol";
+import {IAccount} from "src/external/IAccount.sol";
+import {IEntryPoint} from "src/external/IEntryPoint.sol";
+import {UserOperation} from "src/external/UserOperation.sol";
 
 import "forge-std/console.sol";
 
@@ -19,7 +19,7 @@ import "forge-std/console.sol";
 // 3. ECDSA for signature validation
 // In this early version, there is an owner/admin who is able to sweep the wallet in case of emergency
 // Owner is default set to the deployer address
-contract SmartWallet is Ownable, IWallet {
+contract SmartWallet is Ownable, IAccount {
     event UpdateEntryPoint(address indexed _newEntryPoint, address indexed _oldEntryPoint);
     event WithdrawERC20(address indexed _to, address _token, uint256 _amount);
     event PayPrefund(address indexed _payee, uint256 _amount);
@@ -56,10 +56,12 @@ contract SmartWallet is Ownable, IWallet {
     // 3. Nonce is correct
     /// @param userOp - ERC-4337 User Operation
     /// @param userOpHash - Hash of the user operation, entryPoint address and chainId
+    /// @param aggregator - Signature aggregator
     /// @param missingWalletFunds - Amount of ETH to pay the EntryPoint for processing the transaction
     function validateUserOp(
         UserOperation calldata userOp,
         bytes32 userOpHash, // TODO: Shouldn't this hash be constructed internally over the userOp? Why is it passed?
+        address aggregator,
         uint256 missingWalletFunds
     ) external override onlyEntryPoint returns (uint256 deadline) {
         // Validate signature

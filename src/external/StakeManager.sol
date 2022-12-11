@@ -1,60 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.12;
 
+import "./IStakeManager.sol";
+
 /* solhint-disable avoid-low-level-calls */
 /* solhint-disable not-rely-on-time */
 /**
  * manage deposits and stakes.
- * deposit is just a balance used to pay for UserOperations (either by a paymaster or a wallet)
+ * deposit is just a balance used to pay for UserOperations (either by a paymaster or an account)
  * stake is value locked for at least "unstakeDelay" by a paymaster.
  */
-abstract contract StakeManager {
-    /**
-     * minimum time (in seconds) required to lock a paymaster stake before it can be withdraw.
-     */
-    uint32 public immutable unstakeDelaySec;
-
-    /**
-     * minimum value required to stake for a paymaster
-     */
-    uint256 public immutable paymasterStake;
-
-    constructor(uint256 _paymasterStake, uint32 _unstakeDelaySec) {
-        unstakeDelaySec = _unstakeDelaySec;
-        paymasterStake = _paymasterStake;
-    }
-
-    event Deposited(address indexed account, uint256 totalDeposit);
-
-    event Withdrawn(address indexed account, address withdrawAddress, uint256 amount);
-
-    /// Emitted once a stake is scheduled for withdrawal
-    event StakeLocked(address indexed account, uint256 totalStaked, uint256 withdrawTime);
-
-    /// Emitted once a stake is scheduled for withdrawal
-    event StakeUnlocked(address indexed account, uint256 withdrawTime);
-
-    event StakeWithdrawn(address indexed account, address withdrawAddress, uint256 amount);
-
-    /**
-     * @param deposit the account's deposit
-     * @param staked true if this account is staked as a paymaster
-     * @param stake actual amount of ether staked for this paymaster. must be above paymasterStake
-     * @param unstakeDelaySec minimum delay to withdraw the stake. must be above the global unstakeDelaySec
-     * @param withdrawTime - first block timestamp where 'withdrawStake' will be callable, or zero if already locked
-     * @dev sizes were chosen so that (deposit,staked) fit into one cell (used during handleOps)
-     *    and the rest fit into a 2nd cell.
-     *    112 bit allows for 2^15 eth
-     *    64 bit for full timestamp
-     *    32 bit allow 150 years for unstake delay
-     */
-    struct DepositInfo {
-        uint112 deposit;
-        bool staked;
-        uint112 stake;
-        uint32 unstakeDelaySec;
-        uint64 withdrawTime;
-    }
+abstract contract StakeManager is IStakeManager {
 
     /// maps paymaster to their deposits and stakes
     mapping(address => DepositInfo) public deposits;
@@ -95,12 +51,18 @@ abstract contract StakeManager {
      */
     function addStake(uint32 _unstakeDelaySec) public payable {
         DepositInfo storage info = deposits[msg.sender];
-        require(_unstakeDelaySec >= unstakeDelaySec, "unstake delay too low");
+        require(_unstakeDelaySec > 0, "must specify unstake delay");
         require(_unstakeDelaySec >= info.unstakeDelaySec, "cannot decrease unstake time");
         uint256 stake = info.stake + msg.value;
-        require(stake >= paymasterStake, "stake value too low");
+        require(stake > 0, "no stake specified");
         require(stake < type(uint112).max, "stake overflow");
-        deposits[msg.sender] = DepositInfo(info.deposit, true, uint112(stake), _unstakeDelaySec, 0);
+        deposits[msg.sender] = DepositInfo(
+            info.deposit,
+            true,
+            uint112(stake),
+            _unstakeDelaySec,
+            0
+        );
         emit StakeLocked(msg.sender, stake, _unstakeDelaySec);
     }
 
@@ -118,6 +80,7 @@ abstract contract StakeManager {
         emit StakeUnlocked(msg.sender, withdrawTime);
     }
 
+
     /**
      * withdraw from the (unlocked) stake.
      * must first call unlockStake and wait for the unstakeDelay to pass
@@ -133,7 +96,7 @@ abstract contract StakeManager {
         info.withdrawTime = 0;
         info.stake = 0;
         emit StakeWithdrawn(msg.sender, withdrawAddress, stake);
-        (bool success,) = withdrawAddress.call{value: stake}("");
+        (bool success,) = withdrawAddress.call{value : stake}("");
         require(success, "failed to withdraw stake");
     }
 
@@ -143,11 +106,11 @@ abstract contract StakeManager {
      * @param withdrawAmount the amount to withdraw.
      */
     function withdrawTo(address payable withdrawAddress, uint256 withdrawAmount) external {
-        DepositInfo memory info = deposits[msg.sender];
+        DepositInfo storage info = deposits[msg.sender];
         require(withdrawAmount <= info.deposit, "Withdraw amount too large");
         info.deposit = uint112(info.deposit - withdrawAmount);
         emit Withdrawn(msg.sender, withdrawAddress, withdrawAmount);
-        (bool success,) = withdrawAddress.call{value: withdrawAmount}("");
+        (bool success,) = withdrawAddress.call{value : withdrawAmount}("");
         require(success, "failed to withdraw");
     }
 }

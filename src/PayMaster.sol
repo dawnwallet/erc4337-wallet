@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity ^0.8.13;
 
-import {IPaymaster} from "src/interfaces/IPayMaster.sol";
-import {IEntryPoint} from "src/interfaces/IEntryPoint.sol";
-import {UserOperation} from "./UserOperation.sol";
+import {IPaymaster} from "src/external/IPayMaster.sol";
+import {IEntryPoint} from "src/external/IEntryPoint.sol";
+import {UserOperation} from "src/external/UserOperation.sol";
 import {Ownable} from "openzeppelin-contracts/access/Ownable.sol";
 
-// Based on PayMaster in: https://github.com/eth-infinitism/account-abstraction 
+// Based on PayMaster in: https://github.com/eth-infinitism/account-abstraction
 contract PayMaster is IPaymaster, Ownable {
     IEntryPoint public entryPoint;
 
@@ -47,12 +47,12 @@ contract PayMaster is IPaymaster, Ownable {
     ///         all transactions by everyone to be paid for through this paymaster.
     function validatePaymasterUserOp(UserOperation calldata userOp, bytes32 userOpHash, uint256 maxCost)
         external
-        override
         view
-        returns (bytes memory context)
+        override
+        returns (bytes memory context, uint256 deadline)
     {
         // Pay for all transactions from everyone, with no check
-        return "";
+        return ("", 0);
     }
 
     /// @notice Handler for charging the sender (smart wallet) for the transaction after it has been paid for by the paymaster

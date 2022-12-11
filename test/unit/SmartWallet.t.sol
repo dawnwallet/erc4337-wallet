@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 
 import {SmartWallet} from "src/SmartWallet.sol";
-import {UserOperation} from "src/UserOperation.sol";
+import {UserOperation} from "src/external/UserOperation.sol";
 import {MockSetter} from "./mock/MockSetter.sol";
 import {getUserOperation} from "./Fixtures.sol";
 
@@ -50,8 +50,9 @@ contract SmartWalletContractUnitTest is Test {
 
         uint256 missingWalletFunds = 0;
 
+        address aggregator = address(2);
         vm.prank(entryPoint);
-        uint256 deadline = wallet.validateUserOp(userOp, digest, missingWalletFunds);
+        uint256 deadline = wallet.validateUserOp(userOp, digest, aggregator, missingWalletFunds);
         assertEq(deadline, 0);
 
         // Validate nonce incremented

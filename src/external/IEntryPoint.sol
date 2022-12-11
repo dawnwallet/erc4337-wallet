@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.12;
 
-import {UserOperation} from "../UserOperation.sol";
-import {IStakeManager} from "./IStakeManager.sol";
-
-// Note: From https://github.com/eth-infinitism/account-abstraction 
+import "./UserOperation.sol";
+import "./IStakeManager.sol";
+import {IAggregator} from "./IAggregator.sol";
 
 interface IEntryPoint is IStakeManager {
     /**
@@ -56,6 +55,14 @@ interface IEntryPoint is IStakeManager {
      */
     error SignatureValidationFailed(address aggregator);
 
+    //UserOps handled, per aggregator
+    struct UserOpsPerAggregator {
+        UserOperation[] userOps;
+        // aggregator address
+        IAggregator aggregator;
+        // aggregated signature
+        bytes signature;
+    }
 
     /**
      * Execute a batch of UserOperation.
@@ -66,6 +73,14 @@ interface IEntryPoint is IStakeManager {
      * @param beneficiary the address to receive the fees
      */
     function handleOps(UserOperation[] calldata ops, address payable beneficiary) external;
+
+    /**
+     * Execute a batch of UserOperation with Aggregators
+     * @param opsPerAggregator the operations to execute, grouped by aggregator (or address(0) for no-aggregator accounts)
+     * @param beneficiary the address to receive the fees
+     */
+    function handleAggregatedOps(UserOpsPerAggregator[] calldata opsPerAggregator, address payable beneficiary)
+        external;
 
     /**
      * generate a request Id - unique identifier for this request.
@@ -133,7 +148,7 @@ interface IEntryPoint is IStakeManager {
      * this method always revert, and returns the address in SenderAddressResult error
      * @param initCode the constructor code to be passed into the UserOperation.
      */
-    function getSenderAddress(bytes memory initCode) external;
+    // function getSenderAddress(bytes memory initCode) external;
 
     /**
      * return value of getSenderAddress

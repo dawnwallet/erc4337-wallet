@@ -15,7 +15,7 @@ contract DeployAll is Script {
 
     address public constant OWNER = 0xB4c251bf29dEee4E74f128f8B8aAb5b61143F492;
 
-    uint32 public constant UNSTAKE_DELAY = 100 seconds;
+    uint32 public constant UNSTAKE_DELAY = 10 seconds;
     uint112 PAYMASTER_DEPOSIT = 0.1 ether;
     uint112 PAYMASTER_STAKE = 0.1 ether;
 

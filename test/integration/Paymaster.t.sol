@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 
 import {SmartWallet} from "src/SmartWallet.sol";
-import {IEntryPoint} from "src/interfaces/IEntryPoint.sol";
+import {IEntryPoint} from "src/external/IEntryPoint.sol";
 import {PayMaster} from "src/PayMaster.sol";
 
 contract SmartWalletIntegrationTest is Test {

@@ -30,6 +30,15 @@ v1
 v2
 - Smart wallet: https://goerli.etherscan.io/address/0x77fd2AC5385d76B90B48B0A141cc8d418ABE5D18 
 
+V3
+- Entrypoint: 0x5bB5b946426ca8aEE5D5A744bcB15951aCCC5323
+- Wallet: 0x57FF0B3E0e71e38eBFD1579a3e2B39bb0B09DABC
+- Paymaster: 0x904612fBe7cCF7c1f9872e7582f10a106BB86eC4
 
 ## Acknowledgements
 Based on the the work done on the Eth-Infinitism repo: https://github.com/eth-infinitism/account-abstraction 
+
+## TODO
+- Update contracts to latest interfaces/code from AA repo
+- Redeploy
+- Get server working, likely locally

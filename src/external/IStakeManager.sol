@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
-
-// Note: From https://github.com/eth-infinitism/account-abstraction
+// SPDX-License-Identifier: GPL-3.0-only
+pragma solidity ^0.8.12;
 
 /**
  * manage deposits and stakes.
@@ -9,17 +7,36 @@ pragma solidity ^0.8.13;
  * stake is value locked for at least "unstakeDelay" by a paymaster.
  */
 interface IStakeManager {
-    event Deposited(address indexed account, uint256 totalDeposit);
 
-    event Withdrawn(address indexed account, address withdrawAddress, uint256 amount);
+    event Deposited(
+        address indexed account,
+        uint256 totalDeposit
+    );
+
+    event Withdrawn(
+        address indexed account,
+        address withdrawAddress,
+        uint256 amount
+    );
 
     /// Emitted once a stake is scheduled for withdrawal
-    event StakeLocked(address indexed account, uint256 totalStaked, uint256 withdrawTime);
+    event StakeLocked(
+        address indexed account,
+        uint256 totalStaked,
+        uint256 withdrawTime
+    );
 
     /// Emitted once a stake is scheduled for withdrawal
-    event StakeUnlocked(address indexed account, uint256 withdrawTime);
+    event StakeUnlocked(
+        address indexed account,
+        uint256 withdrawTime
+    );
 
-    event StakeWithdrawn(address indexed account, address withdrawAddress, uint256 amount);
+    event StakeWithdrawn(
+        address indexed account,
+        address withdrawAddress,
+        uint256 amount
+    );
 
     /**
      * @param deposit the account's deposit
