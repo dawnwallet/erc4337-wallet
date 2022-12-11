@@ -111,7 +111,8 @@ contract SmartWallet is Ownable, IAccount {
 
     /// @notice Validate the signature of the userOperation
     function _validateSignature(UserOperation calldata userOp, bytes32 userOpHash) internal view {
-        address signer = ECDSA.recover(userOpHash, userOp.signature);
+        bytes32 messageHash = ECDSA.toEthSignedMessageHash(userOpHash);
+        address signer = ECDSA.recover(messageHash, userOp.signature);
         require(signer == owner(), "SmartWallet: Invalid signature");
     }
 
