@@ -27,7 +27,7 @@ contract DeployAll is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
         vm.startBroadcast(deployerPrivateKey);
-        entryPoint = new EntryPoint(CREATE2_FACTORY, MIN_PAYMASTER_STAKE_AMOUNT, MIN_PAYMASTER_STAKE_DURATION);
+        entryPoint = new EntryPoint();
         wallet = new SmartWallet(address(entryPoint), OWNER);
         paymaster = new PayMaster(address(entryPoint));
 
