@@ -2,14 +2,14 @@
 pragma solidity ^0.8.13;
 
 import {SmartWallet} from "src/SmartWallet.sol";
-import {GoerliAddresses} from "script/GoerliAddresses.sol";
+import {GoerliConfig} from "config/GoerliConfig.sol";
 import "forge-std/Script.sol";
 
 // Deploy the smart wallet. Make use of a previously deployed ENTRY_POINT
 contract DeployWallet is Script {
     SmartWallet public wallet;
 
-    address public constant ENTRY_POINT = GoerliAddresses.ENTRY_POINT;
+    address public constant ENTRY_POINT = GoerliConfig.ENTRY_POINT;
     address public constant OWNER = 0xB4c251bf29dEee4E74f128f8B8aAb5b61143F492;
 
     function run() public {

@@ -7,13 +7,14 @@ import {IEntryPoint} from "src/external/IEntryPoint.sol";
 import {IAccount} from "src/external/IAccount.sol";
 import {IPaymaster} from "src/external/IPaymaster.sol";
 import {UserOperation} from "src/external/UserOperation.sol";
+import {GoerliAddresses} from "config/GoerliAddresses.sol";
 
 contract EndToEndTest is Test {
-    IEntryPoint public constant entryPoint = IEntryPoint(0x9d98Bc2609b080a12aFd52477514DB95d668be3b);
-    IAccount public constant wallet = IAccount(0x1d7dC84343Ae6b068caC1555957ce25513766BD2);
-    IPaymaster public constant paymaster = IPaymaster(0xf18d5c7247b31812d3D06a74Db5CE4A09c12285D);
+    IEntryPoint public constant entryPoint = IEntryPoint(GoerliAddresses.ENTRY_POINT);
+    IAccount public constant wallet = IAccount(GoerliAddresses.WALLET);
+    IPaymaster public constant paymaster = IPaymaster(GoerliAddresses.PAYMASTER);
 
-    address payable public beneficiary = payable(0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1);
+    address payable public beneficiary = payable(GoerliAddresses.BENEFICIARY);
 
     // Test case
     bytes32 public userOpHash;
@@ -24,7 +25,7 @@ contract EndToEndTest is Test {
 
     function setUp() public {
         userOp = UserOperation({
-            sender: 0x1d7dC84343Ae6b068caC1555957ce25513766BD2,
+            sender: GoerliAddresses.WALLET,
             nonce: 0,
             initCode: "",
             callData: bytes(
