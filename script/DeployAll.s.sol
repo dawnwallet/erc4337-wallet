@@ -5,6 +5,7 @@ import {SmartWallet} from "src/SmartWallet.sol";
 import {PayMaster} from "src/PayMaster.sol";
 import {EntryPoint} from "src/external/EntryPoint.sol";
 import {WalletFactory} from "src/WalletFactory.sol";
+import {PayMasterToken} from "src/PayMasterToken.sol";
 import {MockERC20} from "test/unit/mock/MockERC20.sol";
 import "forge-std/Script.sol";
 
@@ -15,6 +16,7 @@ contract DeployAll is Script {
     PayMaster public paymaster;
     EntryPoint public entryPoint;
     WalletFactory public factory;
+    PayMasterToken public paymasterToken;
     MockERC20 public token;
 
     address public constant OWNER = 0xB4c251bf29dEee4E74f128f8B8aAb5b61143F492;
@@ -34,6 +36,7 @@ contract DeployAll is Script {
         entryPoint = new EntryPoint();
         wallet = new SmartWallet(address(entryPoint), OWNER);
         paymaster = new PayMaster(address(entryPoint));
+        paymasterToken = new PayMasterToken(address(entryPoint));
         factory = new WalletFactory();
         token = new MockERC20();
 

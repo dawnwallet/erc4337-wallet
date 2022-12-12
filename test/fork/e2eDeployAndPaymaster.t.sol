@@ -37,7 +37,6 @@ contract EndToEndTestDeployAndPaymaster is Test {
     function setUp() public {
         // 0. Determine what the sender account will be beforehand
         address sender = walletFactory.computeAddress(address(entryPoint), walletOwner, salt);
-        console.log("sender: ", sender);
         vm.deal(sender, 1 ether);
 
         // 1. Generate a userOperation
