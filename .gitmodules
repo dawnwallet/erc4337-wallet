@@ -7,3 +7,6 @@
 	path = lib/openzeppelin-contracts
 	url = https://github.com/openzeppelin/openzeppelin-contracts
 	branch = v4.8.0
+[submodule "lib/elliptic-curve-solidity"]
+	path = lib/elliptic-curve-solidity
+	url = https://github.com/tdrerup/elliptic-curve-solidity
