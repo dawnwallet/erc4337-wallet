@@ -100,15 +100,17 @@ contract EndToEndTestNoPaymaster is Test {
         uint256 finalWalletBalance = token.balanceOf(address(wallet));
         uint256 walletLoss = initialWalletBalance - finalWalletBalance;
 
-        // Verify recipient received expected ETH transfer from smart wallet
+        // Verify recipient received tokens from smart wallet
         assertEq(recipientGain, tokenTransferAmount);
+        console.log("recipientGain:", recipientGain);
 
-        // Verify smart wallet ETH balance decremented by at least the ETH transfer to recipient
-        // Wallet has transferred ETH to the recipient and also paid gas
+        // Verify wallet lost tokens
         assertEq(walletLoss, tokenTransferAmount);
+        console.log("wallet loss: ", walletLoss);
 
         // 2. Verify smart wallet paid for gas
         uint256 walletEthLoss = initialWalletEthBalance - address(wallet).balance;
+        console.log("wallet eth loss: ", walletEthLoss);
         assertGt(walletEthLoss, 0);
     }
 }
