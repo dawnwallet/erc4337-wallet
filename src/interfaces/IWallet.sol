@@ -28,6 +28,12 @@ interface IWallet {
         uint256 missingAccountFunds
     ) external returns (uint256 deadline);
 
+    /// @notice Owner of the contract
+    function owner() external view returns (address);
+
+    /// @notice Entrypoint connected to the wallet
+    function entryPoint() external view returns (address);
+
     /// @notice Get the nonce on the wallet
     function nonce() external view returns (uint256);
 

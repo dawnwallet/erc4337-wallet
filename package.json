@@ -13,7 +13,8 @@
     "test:unit": "forge test --match-contract UnitTest",
     "test:fork": "source .env && forge test --match-contract EndToEndTest --rpc-url $GOERLI_RPC_URL",
     "deploy:all": "source .env && forge script script/DeployAll.s.sol:DeployAll --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv",
-    "deploy:wallet": "source .env && forge script script/DeployWallet.s.sol:DeployWallet --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv"
+    "deploy:wallet": "source .env && forge script script/DeployWallet.s.sol:DeployWallet --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv",
+    "deploy:walletFactory": "source .env && forge script script/DeployWalletFactory.s.sol:DeployWalletFactory --rpc-url $GOERLI_RPC_URL --broadcast --verify -vvvv"
   },
   "repository": {
     "type": "git",
