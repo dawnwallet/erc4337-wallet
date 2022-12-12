@@ -30,7 +30,7 @@ contract EndToEndTestDeployAndPaymaster is Test {
     bytes32 public userOpHash;
     address aggregator;
     uint256 missingWalletFunds;
-    uint256 salt = uint256(0x5);
+    uint256 salt = uint256(0x101);
 
     UserOperation public userOp;
 
