@@ -5,64 +5,58 @@ import "forge-std/Test.sol";
 
 import {IEntryPoint} from "src/external/IEntryPoint.sol";
 import {IWallet} from "src/interfaces/IWallet.sol";
-import {IPayMaster} from "src/interfaces/IPayMaster.sol";
+import {IWalletFactory} from "src/interfaces/IWalletFactory.sol";
 import {UserOperation} from "src/external/UserOperation.sol";
 import {GoerliConfig} from "config/GoerliConfig.sol";
 import {createSignature} from "test/utils/createSignature.sol";
 import {getUserOpHash} from "test/utils/getUserOpHash.sol";
 import {MockERC20} from "test/unit/mock/MockERC20.sol";
 
-/// @notice End-to-end test deployed account abstraction contracts
+/// @notice End-to-end test that WalletFactory deploys smart wallets
 contract EndToEndTestWalletDeploy is Test {
     IEntryPoint public constant entryPoint = IEntryPoint(GoerliConfig.ENTRY_POINT);
-    IWallet public constant wallet = IWallet(GoerliConfig.WALLET);
-    IPayMaster public constant paymaster = IPayMaster(GoerliConfig.PAYMASTER);
+
+    // Owner needs to be whoever is signing the transaction
+    IWalletFactory public constant walletFactory = IWalletFactory(GoerliConfig.WALLET_FACTORY);
+
     address payable public beneficiary = payable(GoerliConfig.BENEFICIARY);
     uint256 ownerPrivateKey = vm.envUint("PRIVATE_KEY");
-
-    MockERC20 public token;
+    address walletOwner = GoerliConfig.WALLET_OWNER;
 
     // Test case
     bytes32 public userOpHash;
     address aggregator;
     uint256 missingWalletFunds;
-    address recipient = 0x7851b240aCE79FA6961AE36c865802D1416611e7;
-    uint256 tokenTransferAmount;
+    uint256 salt = uint256(0x4);
 
     UserOperation public userOp;
 
     function setUp() public {
-        // 1. Deploy a MockERC20 and fund smart wallet with tokens
-        token = new MockERC20();
-        token.mint(address(wallet), 100);
+        // 0. Determine what the sender account will be beforehand
+        address sender = walletFactory.computeAddress(address(entryPoint), walletOwner, salt);
+        vm.deal(sender, 1 ether);
 
-        // 2. Generate a userOperation
-        // UserOperation callData transfers a small amount of ETH to 0x7851b240ace79fa6961ae36c865802d1416611e7
+        // 1. Generate a userOperation
         userOp = UserOperation({
-            sender: GoerliConfig.WALLET,
-            nonce: wallet.nonce(),
+            sender: sender,
+            nonce: 0, // 0 nonce, wallet is not deployed and won't be called
             initCode: "",
             callData: "",
-            callGasLimit: 70_000,
-            verificationGasLimit: 958666,
-            preVerificationGas: 115256,
-            maxFeePerGas: 1000105660,
-            maxPriorityFeePerGas: 1000000000,
+            callGasLimit: 2_000_000,
+            verificationGasLimit: 3_000_000,
+            preVerificationGas: 1_000_000,
+            maxFeePerGas: 1_000_105_660,
+            maxPriorityFeePerGas: 1_000_000_000,
             paymasterAndData: "",
             signature: ""
         });
 
-        // Encode userOperation transfer
-        tokenTransferAmount = 10;
-        userOp.callData = abi.encodeWithSelector(
-            wallet.executeFromEntryPoint.selector,
-            address(token), // target
-            0, // value
-            abi.encodeWithSelector(token.transfer.selector, recipient, tokenTransferAmount) // callData
+        // 2. Set initCode, to trigger wallet deploy
+        bytes memory initCode = abi.encodePacked(
+            abi.encodePacked(address(walletFactory)),
+            abi.encodeWithSelector(walletFactory.deployWallet.selector, address(entryPoint), walletOwner, salt)
         );
-
-        // Set the paymaster
-        userOp.paymasterAndData = abi.encodePacked(address(paymaster));
+        userOp.initCode = initCode;
 
         // Sign userOperation and attach signature
         userOpHash = entryPoint.getUserOpHash(userOp);
@@ -73,33 +67,26 @@ contract EndToEndTestWalletDeploy is Test {
         aggregator = address(0);
         missingWalletFunds = 1096029019333521;
 
-        // 3. Fund wallet with ETH
-        vm.deal(address(wallet), 5 ether);
+        // 3. Fund deployer with ETH
+        vm.deal(address(GoerliConfig.DEPLOYER), 5 ether);
     }
 
-    /// @notice Validate that the smart wallet can validate a userOperation
-    function test_WalletValidateUserOp() public {
-        vm.prank(address(entryPoint));
-        wallet.validateUserOp(userOp, userOpHash, aggregator, missingWalletFunds);
-    }
-
-    /// @notice Validate that the EntryPoint can execute a userOperation, with the paymaster paying for gas
-    function test_HandleOps_Paymaster() public {
-        uint256 initialWalletEthBalance = address(wallet).balance;
-        uint256 initialPaymasterDeposit = paymaster.getDeposit();
-        assertGt(initialPaymasterDeposit, 0);
-
+    /// @notice Validate that the WalletFactory deploys a smart wallet
+    function test_WalletFactory_Deploy() public {
         UserOperation[] memory userOps = new UserOperation[](1);
         userOps[0] = userOp;
 
+        // Deploy walle through the entryPoint
         entryPoint.handleOps(userOps, beneficiary);
 
-        // Verify Paymaster deposit on EntryPoint was used to pay for gas
-        uint256 paymasterDepositLoss = initialPaymasterDeposit - paymaster.getDeposit();
-        assertGt(paymasterDepositLoss, 0);
+        // Verify wallet was deployed as expected
+        address expectedWalletAddress = walletFactory.computeAddress(address(entryPoint), walletOwner, salt);
+        IWallet deployedWallet = IWallet(expectedWalletAddress);
 
-        // Verify smart contract wallet did not use it's gas deposit
-        uint256 walletEthLoss = initialWalletEthBalance - address(wallet).balance;
-        assertEq(walletEthLoss, 0);
+        // Extract the code at the expected address
+        uint256 codeSize = expectedWalletAddress.code.length;
+        assertGt(codeSize, 0);
+        assertEq(deployedWallet.owner(), walletOwner);
+        assertEq(deployedWallet.entryPoint(), address(entryPoint));
     }
 }
